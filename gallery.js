@@ -1,40 +1,123 @@
 import images from "./gallery-items.js"
 
-
-// Объект ссылок
 const refs = {
-  gallery: document.querySelector('ul.gallery'),
-  lightbox: document.querySelector('.js-lightbox'),
-  lightboxImg: document.querySelector('.lightbox__image'),
-  button: document.querySelector('[data-action="close-lightbox"]')
+  gallery: document.querySelector(".gallery"),
+  modal: document.querySelector(".js-lightbox"),
+  originalImg: document.querySelector(".lightbox__image"),
+  backDrop: document.querySelector(".lightbox__overlay"),
+  closeModalBtn: document.querySelector(".lightbox__button"),
 };  
 
-// Создаем лишку с картинкой в ссылке и впихиваем в DOM
+// ------------ + ------------
+
+refs.gallery.addEventListener("click", onOpenModal);
+refs.closeModalBtn.addEventListener('click', onCloseModal);
+refs.backDrop.addEventListener("click", onBackDropClick);
+window.addEventListener("keydown", onEscapeClose);
+
 const galleryItem = images.reduce((acc, item) => {
   return acc + `
-  <li class="gallery__item"><a class="gallery__link" 
-  href="${item.original}"><img class="gallery__image" 
-  data-source="${item.original}" 
-  src="${item.preview}" 
-  alt="${item.description}"></a></li>`
+  <li class="gallery__item">
+    <a class="gallery__link" href="">
+      <img class="gallery__image" 
+      data-source="${item.original}" 
+      src="${item.preview}" 
+      alt="${item.description}">
+    </a>
+  </li>`
   }, ``
 );
 refs.gallery.insertAdjacentHTML("beforeend", galleryItem);
 
-// Открываем модалку и загружаем изображение
+function onOpenModal(event) {
+  event.preventDefault();
+  
+  if (event.target.nodeName === 'IMG') {
+    refs.modal.classList.add('is-open');
+    onAddImgAttributes();
+  };
+};
+
+function onAddImgAttributes() {
+  refs.originalImg.src = event.target.dataset.source;
+  refs.originalImg.alt = event.target.alt;
+};
+
+function onCloseModal() {
+  refs.modal.classList.remove('is-open');
+  refs.originalImg.src = "";
+};
+
+function onBackDropClick(event) {
+  if (event.target === event.currentTarget) {
+    onCloseModal();
+  };
+};
+
+function onEscapeClose(event) {
+  if (event.code === "Escape") {
+    onCloseModal();
+  }
+};
+
+// ============ 
+
+/*
+
+// Создает лишку с картинкой в ссылке и впихиваем в DOM
+const galleryItem = images.reduce((acc, item) => {
+  return acc + `
+  <li class="gallery__item">
+    <a class="gallery__link" href="${item.original}">
+      <img class="gallery__image" 
+      data-source="${item.original}" 
+      src="${item.preview}" 
+      alt="${item.description}">
+    </a>
+  </li>`
+  }, ``
+);
+refs.gallery.insertAdjacentHTML("beforeend", galleryItem);
+
+// Открывает модалку (делегирование)
 refs.gallery.addEventListener('click', event => {
   event.preventDefault();
   
-  // Добавляем класс и атрибуты картинке в модалке
+  // Добавляет класс 
   if (event.target.nodeName === 'IMG') {
-    refs.lightbox.classList.add('is-open');
-    refs.lightboxImg.src = event.target.dataset.source;
-    refs.lightboxImg.alt = event.target.alt;
-  }
+    onOpenModal();
+  };
+
+  // Добавляет атрибуты большой картинке
+  refs.originalImg.src = event.target.dataset.source;
+  refs.originalImg.alt = event.target.alt;
+  
+  // Закрывает модалку по Escape
+  window.addEventListener("keydown", event => {
+    if (event.code === "Escape") {
+      onCloseModal();
+    };
+  });
 });
 
-// Закрываем модалку и очищаем src
-refs.button.addEventListener('click', event => {
-    refs.lightboxImg.src = "";
-    refs.lightbox.classList.remove('is-open');
+// Закрывает модалку с крестика
+refs.closeModalBtn.addEventListener('click', onCloseModal);
+
+// Закрывает модалку по бэкдропу
+refs.backDrop.addEventListener("click", (event) => {
+  if (event.target === event.currentTarget) {
+    onCloseModal();
+  };
 });
+
+function onOpenModal() {
+  refs.modal.classList.add('is-open');
+};
+
+function onCloseModal() {
+  refs.modal.classList.remove('is-open');
+  refs.originalImg.src = "";
+};
+
+*/
+
