@@ -10,6 +10,85 @@ const refs = {
 
 // ------------ + ------------
 
+// console.log(images[0].original);
+
+refs.gallery.addEventListener("click", onOpenModal);
+refs.closeModalBtn.addEventListener('click', onCloseModal);
+refs.backDrop.addEventListener("click", onBackDropClick);
+
+const galleryItem = images.reduce((acc, item, index) => {
+  return acc + `
+  <li class="gallery__item">
+    <a class="gallery__link" href="">
+      <img class="gallery__image" 
+      data-source="${item.original}"
+      src="${item.preview}" 
+      alt="${item.description}"
+      data-index="${index}">
+    </a>
+  </li>`
+  }, ``
+);
+refs.gallery.insertAdjacentHTML("beforeend", galleryItem);
+
+let activeIndex = 0;
+
+function onOpenModal(event) {
+  event.preventDefault();
+  
+  if (event.target.nodeName === 'IMG') {
+    window.addEventListener("keydown", onPressEscape);
+    window.addEventListener("keydown", onKeydown);
+    refs.modal.classList.add('is-open');
+    activeIndex = Number(event.target.dataset.index);
+    onAddImgAttributes(event);
+  };
+};
+
+function onAddImgAttributes(event) {
+  refs.originalImg.src = event.target.dataset.source;
+  refs.originalImg.alt = event.target.alt;
+  refs.originalImg.setAttribute("data-index", event.target.dataset.index);
+};
+
+function onKeydown(event) {
+  if (onOpenModal && event.code === "ArrowRight") {
+    refs.originalImg.setAttribute('data-index', activeIndex += 1);
+    console.log(activeIndex);
+    refs.originalImg.src = images[activeIndex].original;
+    console.log(images[activeIndex].original);
+  } else if (onOpenModal && event.code === "ArrowLeft") {
+    refs.originalImg.setAttribute('data-index', activeIndex -= 1)
+    refs.originalImg.src = images[activeIndex].original;
+    console.log(activeIndex);
+  };
+};
+
+function onCloseModal() {
+  refs.modal.classList.remove('is-open');
+  refs.originalImg.src = "";
+  window.removeEventListener("keydown", onPressEscape);
+  window.removeEventListener("keydown", onKeydown);
+};
+
+function onBackDropClick(event) {
+  if (event.target === event.currentTarget) {
+    onCloseModal();
+  };
+};
+
+function onPressEscape(event) {
+  if (event.code === "Escape") {
+    onCloseModal();
+  }
+};
+
+// */
+
+// ============
+
+/*
+
 refs.gallery.addEventListener("click", onOpenModal);
 refs.closeModalBtn.addEventListener('click', onCloseModal);
 refs.backDrop.addEventListener("click", onBackDropClick);
@@ -59,6 +138,8 @@ function onEscapeClose(event) {
     onCloseModal();
   }
 };
+
+*/
 
 // ============ 
 
