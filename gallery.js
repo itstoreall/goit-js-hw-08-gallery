@@ -11,13 +11,15 @@ const refs = {
 const original = refs.originalImg;
 const gallery = refs.gallery;
 const modal = refs.modal;
+const backDrop = refs.backDrop
+const close = refs.closeModalBtn
 let activeIndex = 0;
 
-// ------------ + ------------
-
 gallery.addEventListener("click", onOpenModal);
-refs.closeModalBtn.addEventListener('click', onCloseModal);
-refs.backDrop.addEventListener("click", onBackDropClick);
+close.addEventListener('click', onCloseModal);
+backDrop.addEventListener("click", onBackDropClick);
+
+// Create Gallery Item
 
 const galleryItem = images.reduce((acc, item, index) => {
   return acc + `
@@ -34,16 +36,32 @@ const galleryItem = images.reduce((acc, item, index) => {
 );
 gallery.insertAdjacentHTML("beforeend", galleryItem);
 
+createControls();
+
+// Create Controls
+
+function createControls() {
+  const controls = `
+  <button class="control right js-controlR">></button>
+  <button class="control left js-controlL"><</button>
+  `
+  modal.insertAdjacentHTML("beforeend", controls);
+  const controlR = document.querySelector(".js-controlR");
+  const controlL = document.querySelector(".js-controlL");
+  controlR.addEventListener("click", onControlRClick);
+  controlL.addEventListener("click", onControlLClick);
+};
+
 // Open Modal
 
 function onOpenModal(event) {
   event.preventDefault();
   if (event.target.nodeName === 'IMG') {
     original.style.opacity = 1;
+    modal.classList.add('is-open');
     window.addEventListener("keydown", onPressEscape);
     window.addEventListener("keydown", onPressRight);
     window.addEventListener("keydown", onPressLeft);
-    modal.classList.add('is-open');
     activeIndex = Number(event.target.dataset.index);
     onAddImgAttributes(event);
   };
@@ -55,24 +73,36 @@ function onAddImgAttributes(event) {
   original.setAttribute("data-index", event.target.dataset.index);
 };
 
+// Click Right and Left
+
+function onControlRClick(event) {
+  if (event.target.classList[2] === "js-controlR" && activeIndex < images.length - 1) {
+    original.setAttribute('data-index', activeIndex += 1);
+    original.src = images[activeIndex].original;
+  };
+};
+
+function onControlLClick(event) {
+  if (event.target.classList[2] === "js-controlL" && activeIndex >= 1) {
+    original.setAttribute('data-index', activeIndex -= 1)
+    original.src = images[activeIndex].original;
+  };
+};
+
 // Press Right and Left
 
 function onPressRight(event) {
-  if (event.code === "ArrowRight" && activeIndex < images.length) {
+  if (event.code === "ArrowRight" && activeIndex < images.length - 1) {
     original.setAttribute('data-index', activeIndex += 1);
     original.src = images[activeIndex].original;
-    console.log(activeIndex);
-    console.log("length:", images.length);
   };
 };
 
 function onPressLeft(event) {
-   if (onOpenModal && event.code === "ArrowLeft" && activeIndex >= 0) {
+   if (onOpenModal && event.code === "ArrowLeft" && activeIndex >= 1) {
     original.setAttribute('data-index', activeIndex -= 1)
     original.src = images[activeIndex].original;
-    console.log(activeIndex);
-    console.log("length:", images.length);
-  };
+  }; 
 };
 
 // Close Modal
@@ -97,123 +127,4 @@ function onPressEscape(event) {
     onCloseModal();
   }
 };
-
-// */
-
-// ============
-
-/*
-
-refs.gallery.addEventListener("click", onOpenModal);
-refs.closeModalBtn.addEventListener('click', onCloseModal);
-refs.backDrop.addEventListener("click", onBackDropClick);
-window.addEventListener("keydown", onEscapeClose);
-
-const galleryItem = images.reduce((acc, item) => {
-  return acc + `
-  <li class="gallery__item">
-    <a class="gallery__link" href="">
-      <img class="gallery__image" 
-      data-source="${item.original}" 
-      src="${item.preview}" 
-      alt="${item.description}">
-    </a>
-  </li>`
-  }, ``
-);
-refs.gallery.insertAdjacentHTML("beforeend", galleryItem);
-
-function onOpenModal(event) {
-  event.preventDefault();
-  
-  if (event.target.nodeName === 'IMG') {
-    refs.modal.classList.add('is-open');
-    onAddImgAttributes();
-  };
-};
-
-function onAddImgAttributes() {
-  refs.originalImg.src = event.target.dataset.source;
-  refs.originalImg.alt = event.target.alt;
-};
-
-function onCloseModal() {
-  refs.modal.classList.remove('is-open');
-  refs.originalImg.src = "";
-};
-
-function onBackDropClick(event) {
-  if (event.target === event.currentTarget) {
-    onCloseModal();
-  };
-};
-
-function onEscapeClose(event) {
-  if (event.code === "Escape") {
-    onCloseModal();
-  }
-};
-
-*/
-
-// ============ 
-
-/*
-
-// Создает лишку с картинкой в ссылке и впихиваем в DOM
-const galleryItem = images.reduce((acc, item) => {
-  return acc + `
-  <li class="gallery__item">
-    <a class="gallery__link" href="${item.original}">
-      <img class="gallery__image" 
-      data-source="${item.original}" 
-      src="${item.preview}" 
-      alt="${item.description}">
-    </a>
-  </li>`
-  }, ``
-);
-refs.gallery.insertAdjacentHTML("beforeend", galleryItem);
-
-// Открывает модалку (делегирование)
-refs.gallery.addEventListener('click', event => {
-  event.preventDefault();
-  
-  // Добавляет класс 
-  if (event.target.nodeName === 'IMG') {
-    onOpenModal();
-  };
-
-  // Добавляет атрибуты большой картинке
-  refs.originalImg.src = event.target.dataset.source;
-  refs.originalImg.alt = event.target.alt;
-  
-  // Закрывает модалку по Escape
-  window.addEventListener("keydown", event => {
-    if (event.code === "Escape") {
-      onCloseModal();
-    };
-  });
-});
-
-// Закрывает модалку с крестика
-refs.closeModalBtn.addEventListener('click', onCloseModal);
-
-// Закрывает модалку по бэкдропу
-refs.backDrop.addEventListener("click", (event) => {
-  if (event.target === event.currentTarget) {
-    onCloseModal();
-  };
-});
-
-function onOpenModal() {
-  refs.modal.classList.add('is-open');
-};
-
-function onCloseModal() {
-  refs.modal.classList.remove('is-open');
-  refs.originalImg.src = "";
-};
-
-*/
 
