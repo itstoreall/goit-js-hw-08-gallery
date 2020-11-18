@@ -8,11 +8,14 @@ const refs = {
   closeModalBtn: document.querySelector(".lightbox__button"),
 };  
 
+const original = refs.originalImg;
+const gallery = refs.gallery;
+const modal = refs.modal;
+let activeIndex = 0;
+
 // ------------ + ------------
 
-// console.log(images[0].original);
-
-refs.gallery.addEventListener("click", onOpenModal);
+gallery.addEventListener("click", onOpenModal);
 refs.closeModalBtn.addEventListener('click', onCloseModal);
 refs.backDrop.addEventListener("click", onBackDropClick);
 
@@ -29,46 +32,58 @@ const galleryItem = images.reduce((acc, item, index) => {
   </li>`
   }, ``
 );
-refs.gallery.insertAdjacentHTML("beforeend", galleryItem);
+gallery.insertAdjacentHTML("beforeend", galleryItem);
 
-let activeIndex = 0;
+// Open Modal
 
 function onOpenModal(event) {
   event.preventDefault();
-  
   if (event.target.nodeName === 'IMG') {
+    original.style.opacity = 1;
     window.addEventListener("keydown", onPressEscape);
-    window.addEventListener("keydown", onKeydown);
-    refs.modal.classList.add('is-open');
+    window.addEventListener("keydown", onPressRight);
+    window.addEventListener("keydown", onPressLeft);
+    modal.classList.add('is-open');
     activeIndex = Number(event.target.dataset.index);
     onAddImgAttributes(event);
   };
 };
 
 function onAddImgAttributes(event) {
-  refs.originalImg.src = event.target.dataset.source;
-  refs.originalImg.alt = event.target.alt;
-  refs.originalImg.setAttribute("data-index", event.target.dataset.index);
+  original.src = event.target.dataset.source;
+  original.alt = event.target.alt;
+  original.setAttribute("data-index", event.target.dataset.index);
 };
 
-function onKeydown(event) {
-  if (onOpenModal && event.code === "ArrowRight") {
-    refs.originalImg.setAttribute('data-index', activeIndex += 1);
+// Press Right and Left
+
+function onPressRight(event) {
+  if (event.code === "ArrowRight" && activeIndex < images.length) {
+    original.setAttribute('data-index', activeIndex += 1);
+    original.src = images[activeIndex].original;
     console.log(activeIndex);
-    refs.originalImg.src = images[activeIndex].original;
-    console.log(images[activeIndex].original);
-  } else if (onOpenModal && event.code === "ArrowLeft") {
-    refs.originalImg.setAttribute('data-index', activeIndex -= 1)
-    refs.originalImg.src = images[activeIndex].original;
-    console.log(activeIndex);
+    console.log("length:", images.length);
   };
 };
 
+function onPressLeft(event) {
+   if (onOpenModal && event.code === "ArrowLeft" && activeIndex >= 0) {
+    original.setAttribute('data-index', activeIndex -= 1)
+    original.src = images[activeIndex].original;
+    console.log(activeIndex);
+    console.log("length:", images.length);
+  };
+};
+
+// Close Modal
+
 function onCloseModal() {
-  refs.modal.classList.remove('is-open');
-  refs.originalImg.src = "";
+  modal.classList.remove('is-open');
+  original.style.opacity = 0;
   window.removeEventListener("keydown", onPressEscape);
-  window.removeEventListener("keydown", onKeydown);
+  window.removeEventListener("keydown", onPressRight);
+  window.removeEventListener("keydown", onPressLeft);
+  original.src = "";
 };
 
 function onBackDropClick(event) {
