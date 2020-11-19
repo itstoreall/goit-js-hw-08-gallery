@@ -79,12 +79,18 @@ function onControlRClick(event) {
   if (event.target.classList[2] === "js-controlR" && activeIndex < images.length - 1) {
     original.setAttribute('data-index', activeIndex += 1);
     original.src = images[activeIndex].original;
+  } else if (event.target.classList[2] === "js-controlR" && activeIndex === images.length - 1) {
+    original.setAttribute('data-index', activeIndex = 0);
+    original.src = images[0].original;
   };
 };
 
 function onControlLClick(event) {
   if (event.target.classList[2] === "js-controlL" && activeIndex >= 1) {
     original.setAttribute('data-index', activeIndex -= 1)
+    original.src = images[activeIndex].original;
+  } else if (event.target.classList[2] === "js-controlL" && activeIndex === 0) {
+    original.setAttribute('data-index', activeIndex = images.length - 1)
     original.src = images[activeIndex].original;
   };
 };
@@ -95,12 +101,18 @@ function onPressRight(event) {
   if (event.code === "ArrowRight" && activeIndex < images.length - 1) {
     original.setAttribute('data-index', activeIndex += 1);
     original.src = images[activeIndex].original;
+  } else if (event.code === "ArrowRight" && activeIndex === images.length - 1) {
+    original.setAttribute('data-index', activeIndex = 0);
+    original.src = images[0].original;
   };
 };
 
 function onPressLeft(event) {
-   if (onOpenModal && event.code === "ArrowLeft" && activeIndex >= 1) {
-    original.setAttribute('data-index', activeIndex -= 1)
+   if (event.code === "ArrowLeft" && activeIndex >= 1) {
+    original.setAttribute('data-index', activeIndex -= 1);
+    original.src = images[activeIndex].original;
+   } else if (event.code === "ArrowLeft" && activeIndex === 0) {
+    original.setAttribute('data-index', activeIndex = images.length - 1);
     original.src = images[activeIndex].original;
   }; 
 };
