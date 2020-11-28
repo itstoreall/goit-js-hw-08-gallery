@@ -36,8 +36,6 @@ const galleryItem = images.reduce((acc, item, index) => {
 );
 gallery.insertAdjacentHTML("beforeend", galleryItem);
 
-createControls();
-
 // Create Controls
 
 function createControls() {
@@ -51,6 +49,8 @@ function createControls() {
   controlR.addEventListener("click", onControlRClick);
   controlL.addEventListener("click", onControlLClick);
 };
+
+createControls();
 
 // Open Modal
 
